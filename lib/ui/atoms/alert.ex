@@ -1,6 +1,7 @@
 defmodule UI.Atoms.Alert do
   use UI, :component
   import UI.Atoms.Icon
+  alias UI.Atoms.Text
 
   @doc """
   Render alert
@@ -13,13 +14,26 @@ defmodule UI.Atoms.Alert do
       </UI.Alert>
   """
 
+  @variants %{
+    variant: %{
+      "default" => "bg-background text-foreground",
+      "destructive" =>
+        "border-destructive/50 text-destructive dark:border-destructive [&>span]:text-destructive"
+    }
+  }
+
+  @default_variants %{
+    variant: "default"
+  }
+
+  attr :title, :string, required: true
+  attr :description, :string, required: true
   attr :variant, :string, default: "default", values: ~w(default destructive)
   attr :class, :string, default: nil
   attr :icon, :string, default: nil
-  slot :inner_block, required: true
   attr :rest, :global, default: %{}
 
-  def alert(assigns) do
+  def c(assigns) do
     assigns =
       assigns
       |> assign_new(:variant, fn -> "default" end)
@@ -42,70 +56,13 @@ defmodule UI.Atoms.Alert do
           <.icon name={@icon} class="w-6 h-6 text-current" />
         </div>
       <% end %>
-      <div>
-        <%= render_slot(@inner_block) %>
+      <div class="flex flex-col gap-y-2">
+        <Text.h4 as="h4"><%= @title %></Text.h4>
+        <Text.h5 as="p"><%= @description %></Text.h5>
       </div>
     </div>
     """
   end
-
-  @doc """
-  Render alert title
-  """
-  attr :class, :string, default: nil
-  attr :rest, :global, include: ~w(disabled form name value)
-  slot :inner_block, required: true
-
-  def alert_title(assigns) do
-    ~H"""
-    <h5
-      class={
-        classes([
-          "mb-1 font-medium leading-none tracking-tight",
-          @class
-        ])
-      }
-      {@rest}
-    >
-      <%= render_slot(@inner_block) %>
-    </h5>
-    """
-  end
-
-  @doc """
-  Render alert description
-  """
-  attr :class, :string, default: nil
-  attr :rest, :global, include: ~w(disabled form name value)
-  slot :inner_block, required: true
-
-  def alert_description(assigns) do
-    ~H"""
-    <div
-      class={
-        classes([
-          "text-sm [&_p]:leading-relaxed",
-          @class
-        ])
-      }
-      {@rest}
-    >
-      <%= render_slot(@inner_block) %>
-    </div>
-    """
-  end
-
-  @variants %{
-    variant: %{
-      "default" => "bg-background text-foreground",
-      "destructive" =>
-        "border-destructive/50 text-destructive dark:border-destructive [&>span]:text-destructive"
-    }
-  }
-
-  @default_variants %{
-    variant: "default"
-  }
 
   defp variant(variants) do
     variants = Map.merge(@default_variants, variants)

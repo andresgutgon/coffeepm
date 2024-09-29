@@ -2,49 +2,97 @@ defmodule CoffeeWeb.Auth.UserForgotPasswordLive do
   use CoffeeWeb, :live_view
 
   alias Coffee.Accounts
-
-  def render(assigns) do
-    ~H"""
-    <div class="mx-auto max-w-sm">
-      <.header class="text-center">
-        Forgot your password?
-        <:subtitle>We'll send a password reset link to your inbox</:subtitle>
-      </.header>
-
-      <.simple_form for={@form} id="reset_password_form" phx-submit="send_email">
-        <.input field={@form[:email]} type="email" placeholder="Email" required />
-        <:actions>
-          <.button phx-disable-with="Sending..." class="w-full">
-            Send password reset instructions
-          </.button>
-        </:actions>
-      </.simple_form>
-      <p class="text-center text-sm mt-4">
-        <.link href={~p"/auth/users/register"}>Register</.link>
-        | <.link href={~p"/auth/users/log_in"}>Log in</.link>
-      </p>
-    </div>
-    """
-  end
+  alias Coffee.Accounts.User
+  alias UI.Atoms.Alert
+  alias UI.Atoms.Form, as: Form
+  alias UI.Atoms.Input, as: Input
+  alias CoffeeWeb.Live.Auth.Components.FormWrapper
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, form: to_form(%{}, as: "user"))}
+    changeset = Accounts.change_reset_email(%User{})
+
+    socket =
+      socket
+      |> assign(trigger_submit: false)
+      |> assign_form(changeset)
+      |> assign(page_title: "Recover password", sent_email: nil)
+
+    form = to_form(%{"email" => nil}, as: "user")
+    {:ok, assign(socket, form: form), temporary_assigns: [form: form]}
   end
 
-  def handle_event("send_email", %{"user" => %{"email" => email}}, socket) do
-    if user = Accounts.get_user_by_email(email) do
-      Accounts.deliver_user_reset_password_instructions(
-        user,
-        &url(~p"/auth/users/reset_password/#{&1}")
-      )
-    end
+  def handle_event("send_email", %{"user" => user_params}, socket) do
+    case Accounts.send_recover_password(
+           user_params,
+           &url(~p"/forgot-password/#{&1}")
+         ) do
+      {:ok, _} ->
+        email = user_params["email"]
 
-    info =
-      "If your email is in our system, you will receive instructions to reset your password shortly."
+        changeset = Accounts.change_reset_email(%User{}, %{"email" => email})
+
+        Process.send_after(self(), :reset_form, 3000)
+
+        {:noreply,
+         socket
+         |> assign(sent_email: email)
+         |> assign_form(changeset)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        changeset = %{changeset | action: :insert}
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
+
+  def handle_info(:reset_form, socket) do
+    changeset = Accounts.change_reset_email(%User{})
 
     {:noreply,
      socket
-     |> put_flash(:info, info)
-     |> redirect(to: ~p"/")}
+     |> assign(sent_email: nil)
+     |> assign_form(changeset)}
+  end
+
+  def render(assigns) do
+    ~H"""
+    <FormWrapper.c title="Recover password">
+      <:subtitle>
+        Send an email to reset your password.
+      </:subtitle>
+      <%= if @sent_email do %>
+        <Alert.c
+          title="All good, check your inbox"
+          description={"An email has been sent to #{@sent_email}."}
+        />
+      <% else %>
+        <Form.c
+          for={@form}
+          id="reset_password_form"
+          phx-submit="send_email"
+          phx-trigger-action={@trigger_submit}
+          method="post"
+        >
+          <Input.c
+            field={@form[:email]}
+            type="text"
+            label="Email"
+            placeholder="Email"
+            autocomplete="email"
+          />
+          <:actions>
+            <% # TODO: implement button links %>
+            <.button phx-disable-with="Sending...">
+              Reset password
+            </.button>
+          </:actions>
+        </Form.c>
+      <% end %>
+    </FormWrapper.c>
+    """
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    form = to_form(changeset, as: "user")
+    assign(socket, form: form)
   end
 end

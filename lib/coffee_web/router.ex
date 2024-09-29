@@ -41,33 +41,38 @@ defmodule CoffeeWeb.Router do
       pipe_through :browser
 
       live_dashboard "/dashboard", metrics: CoffeeWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
 
   ## Authentication routes
 
-  scope "/auth", CoffeeWeb.Auth, as: :auth do
+  scope "/", CoffeeWeb.Auth, as: :auth do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
-    live_session :redirect_if_user_is_authenticated,
-      on_mount: [{CoffeeWeb.Auth.UserAuth, :redirect_if_user_is_authenticated}] do
-      live "/users/register", UserRegistrationLive, :new
-      live "/users/log_in", UserLoginLive, :new
-      live "/users/reset_password", UserForgotPasswordLive, :new
-      live "/users/reset_password/:token", UserResetPasswordLive, :edit
+    live_session(
+      :redirect_if_user_is_authenticated,
+      on_mount: [{CoffeeWeb.Auth.UserAuth, :redirect_if_user_is_authenticated}],
+      layout: {CoffeeWeb.Layouts, :focus}
+    ) do
+      live "/signup", UserRegistrationLive, :new
+      live "/login", UserLoginLive, :new
+      live "/forgot-password", UserForgotPasswordLive, :new
+      live "/forgot-password/:token", UserResetPasswordLive, :edit
     end
 
-    post "/users/log_in", UserSessionController, :create
+    post "/login", UserSessionController, :create
   end
 
-  scope "/auth", CoffeeWeb.Auth, as: :auth do
+  scope "/account", CoffeeWeb.Auth, as: :auth do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :require_authenticated_user,
       on_mount: [{CoffeeWeb.Auth.UserAuth, :ensure_authenticated}] do
-      live "/users/settings", UserSettingsLive, :edit
-      live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+      live "/", UserSettingsLive, :edit
+
+      live "/confirm-email/:token",
+           UserSettingsLive,
+           :confirm_email
     end
   end
 

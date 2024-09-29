@@ -4,9 +4,8 @@ defmodule UI do
     quote do
       use Phoenix.Component
 
-      import UI.Helpers
-      # Class helpers like in NodeJS `clx`: https://github.com/zachdaniel/tails
       import Tails, only: [classes: 1]
+      import Logger, only: [debug: 1, info: 1, warn: 1, error: 1]
 
       alias Phoenix.LiveView.JS
     end
@@ -24,6 +23,10 @@ defmodule UI do
       import UI.Atoms.Alert
       import UI.Atoms.Icon
       import UI.Atoms.Text
+      import UI.Atoms.Form
+      import UI.Atoms.Label
+      import UI.Atoms.FormField
+      import UI.Atoms.Input
     end
   end
 end

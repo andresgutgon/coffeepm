@@ -14,8 +14,6 @@ config :coffee, CoffeeWeb.Endpoint,
   pubsub_server: Coffee.PubSub,
   live_view: [signing_salt: "uBJ9zPTM"]
 
-config :coffee, Coffee.Mailer, adapter: Swoosh.Adapters.Local
-
 config :esbuild,
   version: "0.17.11",
   coffee: [
@@ -44,5 +42,10 @@ config :logger, :console,
   metadata: [:request_id]
 
 config :phoenix, :json_library, Jason
+
+if Mix.env() == :dev do
+  config :mix_test_watch,
+    clear: true
+end
 
 import_config "#{config_env()}.exs"

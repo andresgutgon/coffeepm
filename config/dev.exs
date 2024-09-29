@@ -29,6 +29,15 @@ config :coffee, CoffeeWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:coffee, ~w(--watch)]}
   ]
 
+config :coffee, Coffee.Mailer,
+  adapter: Swoosh.Adapters.SMTP,
+  relay: System.get_env("MAILPIT_SMTP_HOST"),
+  port: String.to_integer(System.get_env("MAILPIT_SMTP_PORT")),
+  username: "",
+  password: "",
+  tls: :if_available,
+  auth: :never
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
