@@ -18,7 +18,12 @@ defmodule CoffeeWeb.Auth.UserResetPasswordLive do
           Oops, something went wrong! Please check the errors below.
         </.error>
 
-        <.input field={@form[:password]} type="password" label="New password" required />
+        <.input
+          field={@form[:password]}
+          type="password"
+          label="New password"
+          required
+        />
         <.input
           field={@form[:password_confirmation]}
           type="password"
@@ -26,13 +31,15 @@ defmodule CoffeeWeb.Auth.UserResetPasswordLive do
           required
         />
         <:actions>
-          <.button phx-disable-with="Resetting..." class="w-full">Reset Password</.button>
+          <.button phx-disable-with="Resetting..." class="w-full">
+            Reset Password
+          </.button>
         </:actions>
       </.simple_form>
 
       <p class="text-center text-sm mt-4">
-        <.link href={~p"/auth/users/register"}>Register</.link>
-        | <.link href={~p"/auth/users/log_in"}>Log in</.link>
+        <.link href={~p"/signup"}>Register</.link>
+        | <.link href={~p"/login"}>Log in</.link>
       </p>
     </div>
     """
@@ -61,7 +68,7 @@ defmodule CoffeeWeb.Auth.UserResetPasswordLive do
         {:noreply,
          socket
          |> put_flash(:info, "Password reset successfully.")
-         |> redirect(to: ~p"/auth/users/log_in")}
+         |> redirect(to: ~p"/login")}
 
       {:error, changeset} ->
         {:noreply, assign_form(socket, Map.put(changeset, :action, :insert))}

@@ -11,7 +11,10 @@ defmodule CoffeeWeb.Auth.UserRegistrationLive do
         Register for an account
         <:subtitle>
           Already registered?
-          <.link navigate={~p"/auth/users/log_in"} class="font-semibold text-brand hover:underline">
+          <.link
+            navigate={~p"/login"}
+            class="font-semibold text-brand hover:underline"
+          >
             Log in
           </.link>
           to your account now.
@@ -24,7 +27,7 @@ defmodule CoffeeWeb.Auth.UserRegistrationLive do
         phx-submit="save"
         phx-change="validate"
         phx-trigger-action={@trigger_submit}
-        action={~p"/auth/users/log_in?_action=registered"}
+        action={~p"/login?_action=registered"}
         method="post"
       >
         <.error :if={@check_errors}>
@@ -35,7 +38,9 @@ defmodule CoffeeWeb.Auth.UserRegistrationLive do
         <.input field={@form[:password]} type="password" label="Password" required />
 
         <:actions>
-          <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
+          <.button phx-disable-with="Creating account..." class="w-full">
+            Create an account
+          </.button>
         </:actions>
       </.simple_form>
     </div>
@@ -59,14 +64,17 @@ defmodule CoffeeWeb.Auth.UserRegistrationLive do
         {:ok, _} =
           Accounts.deliver_user_confirmation_instructions(
             user,
-            &url(~p"/auth/users/confirm/#{&1}")
+            &url(~p"/account/confirm-email/#{&1}")
           )
 
         changeset = Accounts.change_user_registration(user)
-        {:noreply, socket |> assign(trigger_submit: true) |> assign_form(changeset)}
+
+        {:noreply,
+         socket |> assign(trigger_submit: true) |> assign_form(changeset)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, socket |> assign(check_errors: true) |> assign_form(changeset)}
+        {:noreply,
+         socket |> assign(check_errors: true) |> assign_form(changeset)}
     end
   end
 

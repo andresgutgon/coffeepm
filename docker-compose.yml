@@ -12,7 +12,7 @@ services:
     environment:
       - PORT=4004
   db:
-    image: postgres:latest
+    image: postgres:16
     environment:
       - 'POSTGRES_USER=coffee'
       - 'POSTGRES_PASSWORD=secret'

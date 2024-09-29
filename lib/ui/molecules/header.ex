@@ -1,24 +1,25 @@
 defmodule UI.Molecules.Header do
   use UI, :component
+  alias UI.Atoms.Text, as: Text
 
   attr :class, :string, default: nil
   slot :inner_block, required: true
   slot :subtitle
   slot :actions
 
-  def ui_header(assigns) do
+  def c(assigns) do
     ~H"""
     <header class={[
       @actions != [] && "flex items-center justify-between gap-6",
       @class
     ]}>
-      <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
-          <%= render_slot(@inner_block) %> HOLI
-        </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
+      <div class="flex flex-col gap-y-2">
+        <Text.h2 tag="h1" display="block">
+          <%= render_slot(@inner_block) %>
+        </Text.h2>
+        <Text.h5 :if={@subtitle != []} size="h5" tag="p">
           <%= render_slot(@subtitle) %>
-        </p>
+        </Text.h5>
       </div>
       <div class="flex-none"><%= render_slot(@actions) %></div>
     </header>

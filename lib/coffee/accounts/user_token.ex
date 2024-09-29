@@ -116,7 +116,9 @@ defmodule Coffee.Accounts.UserToken do
         query =
           from token in by_token_and_context_query(hashed_token, context),
             join: user in assoc(token, :user),
-            where: token.inserted_at > ago(^days, "day") and token.sent_to == user.email,
+            where:
+              token.inserted_at > ago(^days, "day") and
+                token.sent_to == user.email,
             select: user
 
         {:ok, query}
@@ -150,7 +152,8 @@ defmodule Coffee.Accounts.UserToken do
 
         query =
           from token in by_token_and_context_query(hashed_token, context),
-            where: token.inserted_at > ago(@change_email_validity_in_days, "day")
+            where:
+              token.inserted_at > ago(@change_email_validity_in_days, "day")
 
         {:ok, query}
 
