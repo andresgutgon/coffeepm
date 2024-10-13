@@ -16,7 +16,7 @@ defmodule CoffeeWeb.Auth.UserLoginLive do
 
   def render(assigns) do
     ~H"""
-    <FormWrapper.c title="Welcome back!">
+    <FormWrapper.c title="Login">
       <:subtitle>
         Don't have an account?
         <.link

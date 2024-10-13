@@ -11,6 +11,18 @@ services:
       - db
     environment:
       - PORT=4004
+    # require IEx
+    # In the line you want to stop:
+    # IEx.pry()
+    #
+    # docker-compose run --service-ports web
+    # Uncomment this line:
+    # command: iex -S mix phx.server
+
+    # Keeps stdin open
+    stdin_open: true
+    # Allocates a TTY
+    tty: true
   db:
     image: postgres:16
     environment:

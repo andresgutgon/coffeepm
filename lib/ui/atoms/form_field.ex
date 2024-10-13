@@ -1,4 +1,6 @@
 defmodule UI.Atoms.FormField do
+  require IEx
+
   use UI, :component
   alias UI.Atoms.Label, as: Label
   alias UI.Atoms.Text, as: Text
@@ -21,10 +23,10 @@ defmodule UI.Atoms.FormField do
 
   slot :inner_block, required: true
 
+  attr :error, :string, default: nil
+
   def c(assigns) do
-    assigns =
-      assign_aria_attributes(assigns)
-      |> Map.put(:error, assigns[:errors] |> Enum.join(", "))
+    assigns = assign_aria_attributes(assigns)
 
     ~H"""
     <div
@@ -53,14 +55,14 @@ defmodule UI.Atoms.FormField do
         <%= @description %>
       </Text.h5>
 
-      <Text.h7
-        :if={@error != ""}
+      <Text.h5
+        :if={@error}
         tag="p"
         id={assigns[:form_message_id]}
         color="destructive"
       >
         <%= @error %>
-      </Text.h7>
+      </Text.h5>
     </div>
     """
   end
@@ -87,15 +89,23 @@ defmodule UI.Atoms.FormField do
     form_message_id = "#{id}-form-item-message"
 
     assigns
-    |> Map.put(:form_message_id, form_message_id)
-    |> Map.put(:form_description_id, form_description_id)
-    |> Map.put(:aria_invalid, if(assigns[:error], do: "true", else: "false"))
-    |> Map.put(
+    |> assign(:form_message_id, form_message_id)
+    |> assign(:form_description_id, form_description_id)
+    |> assign(:aria_invalid, if(assigns[:error], do: "true", else: "false"))
+    |> assign(
       :aria_describedby,
       if(assigns[:error],
         do: form_message_id,
         else: "#{form_description_id} #{form_message_id}"
       )
+    )
+    |> assign(
+      :error,
+      case assigns[:errors] do
+        nil -> nil
+        [] -> nil
+        _ -> List.first(assigns[:errors])
+      end
     )
   end
 end

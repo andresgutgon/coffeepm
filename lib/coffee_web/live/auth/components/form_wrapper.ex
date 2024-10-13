@@ -9,7 +9,7 @@ defmodule CoffeeWeb.Live.Auth.Components.FormWrapper do
 
   def c(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm flex flex-col gap-y-6 px-6">
+    <div class="w-96 flex flex-col gap-y-6 px-6">
       <Header.c>
         <%= @title %>
         <:subtitle>
