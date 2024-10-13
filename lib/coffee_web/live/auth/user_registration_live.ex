@@ -1,11 +1,12 @@
 defmodule CoffeeWeb.Auth.UserRegistrationLive do
+  import Logger, only: [debug: 1, info: 1, warn: 1, error: 1]
   use CoffeeWeb, :live_view
 
-  alias CoffeeWeb.Live.Auth.Components.FormWrapper
   alias Coffee.Accounts
   alias Coffee.Accounts.User
   alias UI.Atoms.Form, as: Form
   alias UI.Atoms.Input, as: Input
+  alias CoffeeWeb.Live.Auth.Components.FormWrapper
 
   def mount(_params, _session, socket) do
     changeset = Accounts.change_user_registration(%User{})
@@ -16,6 +17,7 @@ defmodule CoffeeWeb.Auth.UserRegistrationLive do
       |> assign_form(changeset)
 
     form = to_form(%{"email" => nil, "password" => nil}, as: "user")
+
     {:ok, assign(socket, form: form, page_title: "Signup"),
      temporary_assigns: [form: form]}
   end
@@ -35,11 +37,14 @@ defmodule CoffeeWeb.Auth.UserRegistrationLive do
          socket |> assign(trigger_submit: true) |> assign_form(changeset)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
+        debug("------CHANGESET: #{inspect(changeset)}")
         {:noreply, socket |> assign_form(changeset)}
     end
   end
 
   def render(assigns) do
+    debug("---------REnder ASSIGNS: #{inspect(assigns.form[:email])}")
+
     ~H"""
     <FormWrapper.c title="Registration">
       <:subtitle>

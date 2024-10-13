@@ -1,4 +1,5 @@
 defmodule Coffee.Accounts do
+  import Logger, only: [debug: 1, info: 1, warn: 1, error: 1]
   import Ecto.Query, warn: false
   alias Coffee.Repo
 
@@ -20,6 +21,37 @@ defmodule Coffee.Accounts do
     %User{}
     |> User.registration_changeset(attrs)
     |> Repo.insert()
+  end
+
+  def change_reset_email(%User{} = user, attrs \\ %{}) do
+    User.recover_email_changeset(user, attrs, validate_email: false)
+  end
+
+  def send_recover_password(
+        attrs,
+        confirmation_url_fun
+      )
+      when is_function(confirmation_url_fun, 1) do
+    changeset = change_reset_email(%User{}, attrs)
+
+    case changeset do
+      %Ecto.Changeset{valid?: true} ->
+        user = get_user_by_email(Ecto.Changeset.get_field(changeset, :email))
+
+        if user do
+          deliver_user_confirmation_instructions(
+            user,
+            confirmation_url_fun
+          )
+        end
+
+        {:ok, changeset}
+
+      %Ecto.Changeset{valid?: false} ->
+
+        debug("------CHANGE_ACCOUNT: #{inspect(changeset)}")
+        {:error, changeset}
+    end
   end
 
   def change_user_registration(%User{} = user, attrs \\ %{}) do
@@ -157,22 +189,6 @@ defmodule Coffee.Accounts do
     |> Ecto.Multi.delete_all(
       :tokens,
       UserToken.by_user_and_contexts_query(user, ["confirm"])
-    )
-  end
-
-  def deliver_user_reset_password_instructions(
-        %User{} = user,
-        reset_password_url_fun
-      )
-      when is_function(reset_password_url_fun, 1) do
-    {encoded_token, user_token} =
-      UserToken.build_email_token(user, "reset_password")
-
-    Repo.insert!(user_token)
-
-    UserNotifier.deliver_reset_password_instructions(
-      user,
-      reset_password_url_fun.(encoded_token)
     )
   end
 

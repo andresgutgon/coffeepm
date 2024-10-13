@@ -1,6 +1,7 @@
 defmodule Coffee.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Coffee.Repo
 
   schema "users" do
     field :email, :string
@@ -41,6 +42,14 @@ defmodule Coffee.Accounts.User do
     |> validate_email(opts)
     |> validate_password(opts)
   end
+
+  def recover_email_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:email])
+    |> validate_required([:email])
+    |> validate_email(opts)
+  end
+
 
   defp validate_email(changeset, opts) do
     changeset
@@ -88,7 +97,7 @@ defmodule Coffee.Accounts.User do
   defp maybe_validate_unique_email(changeset, opts) do
     if Keyword.get(opts, :validate_email, true) do
       changeset
-      |> unsafe_validate_unique(:email, Coffee.Repo)
+      |> unsafe_validate_unique(:email, Repo)
       |> unique_constraint(:email)
     else
       changeset
