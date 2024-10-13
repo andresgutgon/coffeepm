@@ -1,9 +1,10 @@
 defmodule CoffeeWeb.Auth.UserLoginLive do
   use CoffeeWeb, :live_view
 
-  alias UI.Molecules.Header, as: Header
+  alias CoffeeWeb.Live.Auth.Components.FormWrapper
   alias UI.Atoms.Form, as: Form
   alias UI.Atoms.Input, as: Input
+  alias UI.Atoms.Text
 
   def mount(_params, _session, socket) do
     email = Phoenix.Flash.get(socket.assigns.flash, :email)
@@ -15,20 +16,17 @@ defmodule CoffeeWeb.Auth.UserLoginLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm flex flex-col gap-y-6">
-      <Header.c>
-        Welcome back!
-        <:subtitle>
-          Don't have an account?
-          <.link
-            navigate={~p"/signup"}
-            class="font-semibold text-brand hover:underline"
-          >
-            create one
-          </.link>
-          now
-        </:subtitle>
-      </Header.c>
+    <FormWrapper.c title="Welcome back!">
+      <:subtitle>
+        Don't have an account?
+        <.link
+          navigate={~p"/signup"}
+          class="font-semibold text-brand hover:underline"
+        >
+          create one
+        </.link>
+        now
+      </:subtitle>
       <Form.c id="login_form" action={~p"/login"} for={@form} phx-update="ignore">
         <Input.c
           field={@form[:email]}
@@ -43,27 +41,25 @@ defmodule CoffeeWeb.Auth.UserLoginLive do
           type="password"
           label="Password"
           placeholder="*********"
-          description="Your password must be at least 8 characters long."
+          description="At least 8 characters long."
           required
           autocomplete="current-password"
         />
 
-        <div class="flex items-center justify-between gap-6">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <Input.c field={@form[:remember_me]} type="checkbox" label="Remember me" />
-          <.link
-            href={~p"/forgot-password"}
-            class="flex-shrink-0 text-sm font-semibold"
-          >
-            Forgot your password?
+          <.link href={~p"/forgot-password"} class="flex-shrink-0">
+            <Text.h5b>Forgot your password?</Text.h5b>
           </.link>
         </div>
-        <div class="mt-2 flex items-center justify-between gap-6">
-          <.button phx-disable-with="Logging in..." class="w-full">
-            Enter
+
+        <:actions>
+          <.button phx-disable-with="Logging in...">
+            Enter your account
           </.button>
-        </div>
+        </:actions>
       </Form.c>
-    </div>
+    </FormWrapper.c>
     """
   end
 end
