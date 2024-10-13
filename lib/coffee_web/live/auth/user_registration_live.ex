@@ -15,7 +15,9 @@ defmodule CoffeeWeb.Auth.UserRegistrationLive do
       |> assign(trigger_submit: false)
       |> assign_form(changeset)
 
-    {:ok, socket, temporary_assigns: [form: nil]}
+    form = to_form(%{"email" => nil, "password" => nil}, as: "user")
+    {:ok, assign(socket, form: form, page_title: "Signup"),
+     temporary_assigns: [form: form]}
   end
 
   def handle_event("save", %{"user" => user_params}, socket) do
@@ -35,11 +37,6 @@ defmodule CoffeeWeb.Auth.UserRegistrationLive do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, socket |> assign_form(changeset)}
     end
-  end
-
-  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    form = to_form(changeset, as: "user")
-    assign(socket, form: form)
   end
 
   def render(assigns) do
@@ -68,12 +65,14 @@ defmodule CoffeeWeb.Auth.UserRegistrationLive do
           type="text"
           label="Email"
           placeholder="Enter your email"
+          autocomplete="email"
         />
         <Input.c
           field={@form[:password]}
           type="password"
           label="Password"
           placeholder="**********"
+          autocomplete="new-password"
         />
 
         <:actions>
@@ -84,5 +83,10 @@ defmodule CoffeeWeb.Auth.UserRegistrationLive do
       </Form.c>
     </FormWrapper.c>
     """
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    form = to_form(changeset, as: "user")
+    assign(socket, form: form)
   end
 end
