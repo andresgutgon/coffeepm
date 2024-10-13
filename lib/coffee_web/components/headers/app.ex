@@ -1,4 +1,4 @@
-defmodule CoffeeWeb.Headers.Public do
+defmodule CoffeeWeb.Headers.App do
   use Gettext, backend: CoffeeWeb.Gettext
   use Phoenix.Component
   use CoffeeWeb, :verified_routes
@@ -20,19 +20,10 @@ defmodule CoffeeWeb.Headers.Public do
   end
 
   defp build_menu_items(assigns) do
-    case assigns[:current_user] do
-      nil ->
-        [
-          %{label: "Register", href: ~p"/signup"},
-          %{label: "Login", href: ~p"/login"}
-        ]
-
-      _ ->
-        [
-          %{label: assigns[:current_user].email, font_weight: "bold"},
-          %{label: "Settings", href: ~p"/account"},
-          %{label: "Logout", href: ~p"/auth/users/log_out", method: "delete"}
-        ]
-    end
+    [
+      %{label: assigns[:current_user].email, font_weight: "bold"},
+      %{label: "Settings", href: ~p"/account"},
+      %{label: "Logout", href: ~p"/auth/users/log_out", method: "delete"}
+    ]
   end
 end

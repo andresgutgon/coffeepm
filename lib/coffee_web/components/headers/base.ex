@@ -18,7 +18,7 @@ defmodule CoffeeWeb.Headers.Base do
       - `:href` (optional, string) - the URL.
       - `:method` (optional, string) - the method of the URL. Default `get`
       - `:title` (optional, string) - the tooltip for the link.
-      - `:font_weight` (optional, string) - normal or medium.
+      - `:font_weight` (optional, string) - normal or bold.
     """
 
   attr :bg_color, :string, required: false
@@ -84,14 +84,14 @@ defmodule CoffeeWeb.Headers.Base do
   slot :inner_block, required: true
 
   defp text(assigns) do
-    is_medium = assigns[:font_weight] == "medium"
+    is_bold = assigns[:font_weight] == "bold"
 
     cond do
-      is_medium ->
+      is_bold ->
         ~H"""
-        <Text.h5m>
+        <Text.h5b>
           <%= render_slot(@inner_block) %>
-        </Text.h5m>
+        </Text.h5b>
         """
 
       true ->
