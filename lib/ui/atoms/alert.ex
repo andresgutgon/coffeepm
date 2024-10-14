@@ -1,7 +1,6 @@
-defmodule UI.Alert do
-  @moduledoc false
+defmodule UI.Atoms.Alert do
   use UI, :component
-  import UI.Icon
+  import UI.Atoms.Icon
 
   @doc """
   Render alert

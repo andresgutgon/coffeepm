@@ -2,6 +2,17 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@font-face {
+  font-display: swap;
+  font-family: "Departure Mono";
+  src:
+    url("../fonts/departure-mono/regular.woff2") format("woff2"),
+    url("../fonts/departure-mono/regular.woff") format("woff"),
+    url("../fonts/departure-mono/regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* Dark mode */
 body {
   @apply bg-background text-foreground;

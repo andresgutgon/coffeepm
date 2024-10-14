@@ -1,4 +1,4 @@
-defmodule UI.Icon do
+defmodule UI.Atoms.Icon do
   @moduledoc """
   Renders a [Heroicon](https://heroicons.com).
 
