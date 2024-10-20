@@ -1,8 +1,4 @@
 defmodule Coffee.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
-  @moduledoc false
-
   use Application
 
   @impl true
@@ -13,16 +9,11 @@ defmodule Coffee.Application do
       {DNSCluster,
        query: Application.get_env(:coffee, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Coffee.PubSub},
-      # Start the Finch HTTP client for sending emails
+      # Send emails
       {Finch, name: Coffee.Finch},
-      # Start a worker by calling: Coffee.Worker.start_link(arg)
-      # {Coffee.Worker, arg},
-      # Start to serve requests, typically the last entry
       CoffeeWeb.Endpoint
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Coffee.Supervisor]
     Supervisor.start_link(children, opts)
   end

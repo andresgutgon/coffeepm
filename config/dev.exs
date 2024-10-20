@@ -29,6 +29,15 @@ config :coffee, CoffeeWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:coffee, ~w(--watch)]}
   ]
 
+config :coffee, Coffee.Mailer,
+  adapter: Swoosh.Adapters.SMTP,
+  relay: System.get_env("MAILPIT_SMTP_HOST"),
+  port: String.to_integer(System.get_env("MAILPIT_SMTP_PORT")),
+  username: "",
+  password: "",
+  tls: :if_available,
+  auth: :never
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
@@ -63,24 +72,16 @@ config :coffee, CoffeeWeb.Endpoint,
     ]
   ]
 
-# Enable dev routes for dashboard and mailbox
 config :coffee, dev_routes: true
 
-# Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
-# Set a higher stacktrace during development. Avoid configuring such
-# in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
 
-# Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix_live_view,
-  # Include HEEx debug annotations as HTML comments in rendered markup
   debug_heex_annotations: true,
-  # Enable helpful, but potentially expensive runtime checks
   enable_expensive_runtime_checks: true
 
-# Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
