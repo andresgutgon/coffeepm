@@ -21,6 +21,12 @@ defmodule UI.Atoms.Alert do
         "border-destructive/50 text-destructive dark:border-destructive [&>span]:text-destructive"
     }
   }
+  @text_color_variants %{
+    variant: %{
+      "default" => "foreground",
+      "destructive" => "destructive"
+    }
+  }
 
   @default_variants %{
     variant: "default"
@@ -38,7 +44,8 @@ defmodule UI.Atoms.Alert do
     assigns =
       assigns
       |> assign_new(:variant, fn -> "default" end)
-      |> assign(:variant_class, variant(assigns))
+      |> assign(:variant_class, variant(assigns, @variants))
+      |> assign(:text_color, variant(assigns, @text_color_variants))
 
     ~H"""
     <div
@@ -58,9 +65,15 @@ defmodule UI.Atoms.Alert do
         </div>
       <% end %>
       <div class="flex flex-col gap-y-2">
-        <Text.h4 tag="h4"><%= @title %></Text.h4>
-        <Text.h5 tag="p"><%= @description %></Text.h5>
-        <Text.h5 tag="a" :if={@link.href && @link.text} underline href={@link.href}>
+        <Text.h4 tag="h4" color={@text_color}><%= @title %></Text.h4>
+        <Text.h5 tag="p" color={@text_color}><%= @description %></Text.h5>
+        <Text.h5
+          :if={@link.href && @link.text}
+          tag="a"
+          color={@text_color}
+          underline
+          href={@link.href}
+        >
           <%= @link.text %>
         </Text.h5>
       </div>
@@ -68,9 +81,11 @@ defmodule UI.Atoms.Alert do
     """
   end
 
-  defp variant(variants) do
+  defp variant(variants, variants_list) do
     variants = Map.merge(@default_variants, variants)
 
-    Enum.map_join(variants, " ", fn {key, value} -> @variants[key][value] end)
+    Enum.map_join(variants, " ", fn {key, value} ->
+      variants_list[key][value]
+    end) |> String.trim()
   end
 end
