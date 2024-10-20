@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Check if a path was provided as an argument
+if [ "$1" ]; then
+  # Pass the file path (and optional line number) to mix test.watch
+  docker compose exec web mix test.watch "$1"
+else
+  # Run mix test.watch without a specific file
+  docker compose exec web mix test.watch
+fi
+
