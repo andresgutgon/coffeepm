@@ -12,7 +12,7 @@ defmodule CoffeeWeb.Live.Auth.Components.FormWrapper do
     <div class="w-96 flex flex-col gap-y-6 px-6">
       <Header.c>
         <%= @title %>
-        <:subtitle>
+        <:subtitle :if={@subtitle != []}>
           <%= render_slot(@subtitle) %>
         </:subtitle>
       </Header.c>

@@ -29,6 +29,7 @@ defmodule UI.Atoms.Alert do
   attr :title, :string, required: true
   attr :description, :string, required: true
   attr :variant, :string, default: "default", values: ~w(default destructive)
+  attr :link, :map, default: %{href: nil, text: nil}
   attr :class, :string, default: nil
   attr :icon, :string, default: nil
   attr :rest, :global, default: %{}
@@ -57,8 +58,11 @@ defmodule UI.Atoms.Alert do
         </div>
       <% end %>
       <div class="flex flex-col gap-y-2">
-        <Text.h4 as="h4"><%= @title %></Text.h4>
-        <Text.h5 as="p"><%= @description %></Text.h5>
+        <Text.h4 tag="h4"><%= @title %></Text.h4>
+        <Text.h5 tag="p"><%= @description %></Text.h5>
+        <Text.h5 tag="a" :if={@link.href && @link.text} underline href={@link.href}>
+          <%= @link.text %>
+        </Text.h5>
       </div>
     </div>
     """

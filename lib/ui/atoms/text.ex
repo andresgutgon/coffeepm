@@ -119,9 +119,11 @@ defmodule UI.Atoms.Text do
       )
 
   defp text(assigns) do
+    assigns = extract_rest(assigns)
     assigns =
-      assign(
-        assigns,
+      assigns
+      |> extract_rest()
+      |> assign(
         :css_classes,
         classes([
           color(:text_color, assigns[:color]),
@@ -147,12 +149,42 @@ defmodule UI.Atoms.Text do
         ])
       )
       |> Map.put(:tag, assigns[:tag] || "span")
-      |> Map.put(:rest, assigns[:rest] || %{})
 
     ~H"""
-    <.dynamic_tag name={@tag} class={@css_classes} for={assigns[:for]} {@rest}>
+    <.dynamic_tag name={@tag} class={@css_classes} {@rest}>
       <%= render_slot(@inner_block) %>
     </.dynamic_tag>
     """
+  end
+
+  defp extract_rest(assigns) do
+    explicit_attrs = [
+      :tag,
+      :underline,
+      :size,
+      :family,
+      :align,
+      :color,
+      :tracking,
+      :weight,
+      :display,
+      :white_space,
+      :word_break,
+      :uppercase,
+      :capitalize,
+      :ellipsis,
+      :user_select,
+      :no_wrap,
+      :line_through,
+      :monospace,
+      :centered,
+      :animate,
+      :class
+    ]
+
+    extracted_attrs = Map.take(assigns[:rest] || %{}, explicit_attrs)
+    rest = Map.drop(assigns[:rest] || %{}, explicit_attrs)
+
+    Map.merge(assigns, extracted_attrs) |> Map.put(:rest, rest)
   end
 end

@@ -17,11 +17,14 @@ defmodule UI.Molecules.Header do
         <Text.h2 tag="h1" display="block">
           <%= render_slot(@inner_block) %>
         </Text.h2>
+
         <Text.h5 :if={@subtitle != []} size="h5" tag="p">
           <%= render_slot(@subtitle) %>
         </Text.h5>
       </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
+      <div :if={@actions != []} class="flex-none">
+        <%= render_slot(@actions) %>
+      </div>
     </header>
     """
   end

@@ -1,12 +1,15 @@
 defmodule CoffeeWeb.Auth.UserForgotPasswordLive do
   use CoffeeWeb, :live_view
 
+  @entity_name "user"
+
   alias Coffee.Accounts
   alias Coffee.Accounts.User
   alias UI.Atoms.Alert
   alias UI.Atoms.Form, as: Form
   alias UI.Atoms.Input, as: Input
   alias CoffeeWeb.Live.Auth.Components.FormWrapper
+  use CoffeeWeb.Auth.Helpers.AssignForm, only: [assign_form: 3]
 
   def mount(_params, _session, socket) do
     changeset = Accounts.change_reset_email(%User{})
@@ -14,7 +17,7 @@ defmodule CoffeeWeb.Auth.UserForgotPasswordLive do
     socket =
       socket
       |> assign(trigger_submit: false)
-      |> assign_form(changeset)
+      |> assign_form(changeset, as: @entity_name)
       |> assign(page_title: "Recover password", sent_email: nil)
 
     form = to_form(%{"email" => nil}, as: "user")
@@ -36,11 +39,11 @@ defmodule CoffeeWeb.Auth.UserForgotPasswordLive do
         {:noreply,
          socket
          |> assign(sent_email: email)
-         |> assign_form(changeset)}
+         |> assign_form(changeset, as: @entity_name)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        changeset = %{changeset | action: :insert}
-        {:noreply, assign_form(socket, changeset)}
+        changeset = Map.put(changeset, :action, :insert)
+        {:noreply, assign_form(socket, changeset, as: @entity_name)}
     end
   end
 
@@ -50,7 +53,7 @@ defmodule CoffeeWeb.Auth.UserForgotPasswordLive do
     {:noreply,
      socket
      |> assign(sent_email: nil)
-     |> assign_form(changeset)}
+     |> assign_form(changeset, as: @entity_name)}
   end
 
   def render(assigns) do
@@ -89,10 +92,5 @@ defmodule CoffeeWeb.Auth.UserForgotPasswordLive do
       <% end %>
     </FormWrapper.c>
     """
-  end
-
-  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    form = to_form(changeset, as: "user")
-    assign(socket, form: form)
   end
 end
