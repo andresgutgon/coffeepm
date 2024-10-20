@@ -65,7 +65,7 @@ defmodule CoffeeWeb.Auth.UserResetPasswordLive do
           icon="hero-exclamation-circle"
           variant="destructive"
           title="Invalid recover link"
-          description="The recover link is invalid. Please request a new one."
+          description="The recover link is invalid, please request a new one."
           link={%{href: ~p"/forgot-password", text: "Request a new one"}}
         />
       <% else %>

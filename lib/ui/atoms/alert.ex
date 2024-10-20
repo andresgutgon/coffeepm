@@ -18,7 +18,7 @@ defmodule UI.Atoms.Alert do
     variant: %{
       "default" => "bg-background text-foreground",
       "destructive" =>
-        "border-destructive/50 text-destructive dark:border-destructive [&>span]:text-destructive"
+        "border-destructive/50 text-destructive dark:border-destructive/50 [&>span]:text-destructive"
     }
   }
   @text_color_variants %{
@@ -65,17 +65,17 @@ defmodule UI.Atoms.Alert do
         </div>
       <% end %>
       <div class="flex flex-col gap-y-2">
-        <Text.h4 tag="h4" color={@text_color}><%= @title %></Text.h4>
-        <Text.h5 tag="p" color={@text_color}><%= @description %></Text.h5>
-        <Text.h5
+        <Text.h4b tag="h4" color={@text_color}><%= @title %></Text.h4b>
+        <Text.h5 tag="p" color="foreground_muted"><%= @description %></Text.h5>
+        <Text.h5b
           :if={@link.href && @link.text}
           tag="a"
-          color={@text_color}
           underline
           href={@link.href}
+          color={@text_color}
         >
           <%= @link.text %>
-        </Text.h5>
+        </Text.h5b>
       </div>
     </div>
     """
